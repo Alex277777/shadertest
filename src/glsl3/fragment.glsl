@@ -20,7 +20,6 @@ vec2 columnDraw (vec2 uv){
 void main() {
 	vec2 uv = vUv;
 	
-
 	float time = uProgress;
 	float amplitude = uAmplitude ;
 
@@ -30,5 +29,5 @@ void main() {
 	float bonds1 = step(0.0, (uv.y - uProgress)) * step(0.0, 1. - (uv.y - uProgress));
 	float bonds2 = step(1.0, 1. - (uv.y - uProgress));
 
-	gl_FragColor =  texture1 * bonds1 + texture2 * bonds2;
+	gl_FragColor = texture1 * bonds1 + texture2 * bonds2  ;
 }

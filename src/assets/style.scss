@@ -55,33 +55,101 @@ main {
 
 .img0{
     height: 600px;
-    width: 1200px;
+    max-width: 800px;
     margin: 0 auto;
-    border: 1px solid red;
+    
 }
 .img1{
     height: 600px;
-    width: 800px;
+    max-width: 800px;
     margin: 0 auto;
-    border: 1px solid red;
+    
 }
 .img2{
     height: 600px;
-    width: 800px;
+    max-width: 800px;
     margin: 0 auto;
-    border: 1px solid red;
+    
 }
 .img3{
     height: 600px;
-    width: 800px;
+    max-width: 800px;
     margin: 0 auto;
-    border: 1px solid red;
+    
 }
 .img4{
     height: 600px;
-    width: 800px;
+    max-width: 800px;
     margin: 0 auto;
-    border: 1px solid red;
+    
+}
+.img5{
+    height: 600px;
+    max-width: 800px;
+    margin: 0 auto;
+    
+}
+
+.img6{
+    height: 600px;
+    max-width: 800px;
+    margin: 0 auto;
+    
+}
+.img7{
+    height: 600px;
+    max-width: 800px;
+    margin: 0 auto;
+    
+}
+.img8{
+    height: 999px;
+    max-width: 763px;
+    margin: 0 auto;
+    
+}
+.img9{
+    height: 600px;
+    max-width: 800px;
+    margin: 0 auto;
+    
+}
+.img10{
+    height: 600px;
+    max-width: 800px;
+    margin: 0 auto;
+    
+}
+.img11{
+    height: 600px;
+    max-width: 800px;
+    margin: 0 auto;
+    
+}
+.img12{
+    height: 600px;
+    max-width: 800px;
+    margin: 0 auto;
+    
+}
+.img13{
+    height: 600px;
+    max-width: 800px;
+    margin: 0 auto;
+    
+}
+
+.img14{
+    height: 600px;
+    max-width: 800px;
+    margin: 0 auto;
+    
+}
+.img15{
+    height: 600px;
+    max-width: 800px;
+    margin: 0 auto;
+    
 }
 
 .lil-gui.autoPlace::nth-child(0){
@@ -95,4 +163,32 @@ main {
 .lil-gui.autoPlace::nth-child(0){
     top: 200xp!important;
 
+}
+
+.container{
+    position: relative;
+    .prev{
+        position: absolute;
+        top: 50%;
+        left: 13%;
+        padding: 15px;
+        cursor: pointer;
+        border: 1px solid #fff;
+        border-radius: 8px;
+        &:hover{
+            background-color: rgb(55, 55, 55);
+        }
+    }
+    .next{
+        position: absolute;
+        top: 50%;
+        right: 13%;
+        padding: 15px;
+        cursor: pointer;
+        border: 1px solid #fff;
+        border-radius: 8px;
+        &:hover{
+            background-color:  rgb(55, 55, 55);
+        }
+    }
 }

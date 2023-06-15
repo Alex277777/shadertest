@@ -1,10 +1,12 @@
 import * as THREE from 'three';
-import { GUI } from 'three/examples/jsm/libs/lil-gui.module.min.js'
 import vertex from '/src/glsl1/vertex.glsl';
 import fragment from '/src/glsl1/fragment.glsl';
-import image1 from '/src/assets/img/project_3.jpg';
-import image2 from '/src/assets/img/project_4.jpg';
-import image3 from '/src/assets/img/noise4.jpg';
+import image1 from '/src/assets/img/project_1.jpg';
+import image2 from '/src/assets/img/project_2.jpg';
+import image3 from '/src/assets/img/project_3.jpg';
+import image4 from '/src/assets/img/project_4.jpg';
+import image5 from '/src/assets/img/project_5.jpg';
+import displacment from '/src/assets/img/noise8.jpg';
 import { gsap } from "gsap";
 
 const lerp = (start, end, t) => {
@@ -17,22 +19,60 @@ class MeshItem0 {
         this.scene = scene;
         this.offset = new THREE.Vector2(0, 0);
         this.sizes = new THREE.Vector2(0, 0);
-            
+
+        this.next = this.element.parentElement.querySelector('.next')
+        this.prev =this.element.parentElement.querySelector('.prev')
+        this.images = [image1, image2, image3, image4, image5]
+        this.imgsLoaded = []
+        this.currentSlide = 0;
+
+
         this.createMesh();
         this.clickToElement()
     }
 
     clickToElement(){
-        this.element.addEventListener('click', (event)=> {
-            console.log('sdds', this.uniforms)
 
-            const tl = gsap.timeline();
-            tl.to(this.uniforms.uProgress, {
-                value: 1., 
-                duration: 2,
-                ease: "power3.out"
-            })
-          })
+        this.next.addEventListener('click', ()=>{
+                if (this.isRunning) return;
+                this.isRunning = true;
+                let len = this.imgsLoaded.length;
+                let nextTexture = this.imgsLoaded[(this.currentSlide + 1) % len];
+                this.uniforms.uTexture2.value = nextTexture;
+
+                const tl = gsap.timeline();
+                tl.to(this.uniforms.uProgress, {
+                  value: 1,
+                  onComplete: () => {
+                    this.currentSlide = (this.currentSlide + 1) % len;
+                    this.uniforms.uTexture1.value = nextTexture;
+                    this.uniforms.uProgress.value = 0;
+                    this.isRunning = false;
+                  }
+                })
+                                      
+        });
+        
+        this.prev.addEventListener('click', ()=>{
+                if (this.isRunning) return;
+                this.isRunning = true;
+                let len = this.imgsLoaded.length;
+                const prevIndex = this.currentSlide === 0 ? len - 1 : this.currentSlide - 1;
+                let prevTexture = this.imgsLoaded[prevIndex];
+                this.uniforms.uTexture2.value = prevTexture;
+
+                const tl = gsap.timeline();
+                tl.to(this.uniforms.uProgress, {
+                  value: 1,
+                  onComplete: () => {
+                    this.currentSlide = prevIndex;
+                    this.uniforms.uTexture1.value = prevTexture;
+                    this.uniforms.uProgress.value = 0;
+                    this.isRunning = false;
+                  }
+                })
+            
+        });
     }
 
 
@@ -44,21 +84,22 @@ class MeshItem0 {
 
     createMesh() {
         const geometry = new THREE.PlaneGeometry(1, 1, 10, 10);
+
+        this.images.forEach((item) => {
+            const imageTexture = new THREE.TextureLoader().load(item);
+            imageTexture.minFilter = THREE.LinearFilter;
+            this.imgsLoaded.push(imageTexture)
+        })
         
-        this.imageTexture1 = new THREE.TextureLoader().load(image1);
-        this.imageTexture1.minFilter = THREE.LinearFilter;
 
-        this.imageTexture2 = new THREE.TextureLoader().load(image2);
-        this.imageTexture2.minFilter = THREE.LinearFilter;
-
-        this.imageTexture3 = new THREE.TextureLoader().load(image3);
-        this.imageTexture3.minFilter = THREE.LinearFilter;
+        this.displacmentImg = new THREE.TextureLoader().load(displacment);
+        this.displacmentImg.minFilter = THREE.LinearFilter;
 
 
         this.uniforms = {
-            uTexture1: { value: this.imageTexture1 },
-            uTexture2: { value: this.imageTexture2 },
-            uDisplacment: { value: this.imageTexture3 },
+            uTexture1: { value: this.imgsLoaded[this.currentSlide]},
+            uTexture2: { value: this.imgsLoaded[this.nextSlide] },
+            uDisplacment: { value: this.displacmentImg },
             uOffset: { value: new THREE.Vector2(0.0, 0.0) },
             uAlpha: { value: 1.0 },
             u_mouse: { type: "v2", value: new THREE.Vector2() },
@@ -86,6 +127,9 @@ class MeshItem0 {
         this.mesh.scale.set(this.sizes.x, this.sizes.y, 1);
 
         this.uniforms.uOffset.value.set(this.offset.x * 0.5, -(velocity) * 0.0003);
+
+
+     
 
         if (this.mesh.uuid === selectMesh?.uuid) {
             this.uniforms.u_mouse.value.x = lerp(0.0, mouseCoordinates.x, 0.6);

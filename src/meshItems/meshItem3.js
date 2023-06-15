@@ -1,11 +1,13 @@
 import * as THREE from 'three';
 import vertex from '/src/glsl3/vertex.glsl';
 import fragment from '/src/glsl3/fragment.glsl';
-import image1 from '/src/assets/img/project_3.jpg';
-import image2 from '/src/assets/img/project_4.jpg';
-import image3 from '/src/assets/img/noise4.jpg';
+import image1 from '/src/assets/img/project_1.jpg';
+import image2 from '/src/assets/img/project_2.jpg';
+import image3 from '/src/assets/img/project_3.jpg';
+import image4 from '/src/assets/img/project_4.jpg';
+import image5 from '/src/assets/img/project_5.jpg';
+import displacment from '/src/assets/img/noise3.jpg';
 import { gsap } from "gsap";
-
 
 const lerp = (start, end, t) => {
     return start * (1 - t) + end * t;
@@ -17,36 +19,84 @@ class MeshItem0 {
         this.scene = scene;
         this.offset = new THREE.Vector2(0, 0);
         this.sizes = new THREE.Vector2(0, 0);
-            
+
+        this.next = this.element.parentElement.querySelector('.next')
+        this.prev =this.element.parentElement.querySelector('.prev')
+        this.images = [image1, image2, image3, image4, image5]
+        this.imgsLoaded = []
+        this.currentSlide = 0;
+        this.nextSlide = 1;
+        this.isRunning = false;
+
+
         this.createMesh();
         this.clickToElement()
     }
 
-
     clickToElement(){
-        this.element.addEventListener('click', (event)=> {
-            console.log('sdds', this.uniforms)
+        this.next.addEventListener('click', ()=>{
+            if (this.isRunning) return;
+            this.isRunning = true;
+            let len = this.imgsLoaded.length;
+            let nextTexture = this.imgsLoaded[(this.currentSlide + 1) % len];
+            this.uniforms.uTexture2.value = nextTexture;
 
             const tl = gsap.timeline();
-            tl
-            .to(this.uniforms.uAmplitude, {
+            tl.to(this.uniforms.uAmplitude, {
                 value: 10., 
-                duration: 1,
-                delay: 0.2,
-                ease: "power3.out",
-            }).to(this.uniforms.uProgress, {
-                value: 1., 
+            })
+            .to(this.uniforms.uProgress, {
+               value: 1., 
                 duration: 1,
                 ease: "power2.out"
-            }).to(this.uniforms.uAmplitude, {
+            })
+            .to(this.uniforms.uAmplitude, {
                 value: 0., 
                 duration: 1,
                 delay: 0.2,
                 ease: "power3.out",
+                onComplete: () => {
+                    this.currentSlide = (this.currentSlide + 1) % len;
+                    this.uniforms.uTexture1.value = nextTexture;
+                    this.uniforms.uProgress.value = 0;
+                    this.isRunning = false;
+                    }
             })
-          })
-          
-        //   uTexture2: { value: this.imageTexture2 },
+                                  
+    });
+    
+    this.prev.addEventListener('click', ()=>{
+        if (this.isRunning) return;
+        this.isRunning = true;
+        let len = this.imgsLoaded.length;
+        const prevIndex = this.currentSlide === 0 ? len - 1 : this.currentSlide - 1;
+        let prevTexture = this.imgsLoaded[prevIndex];
+        this.uniforms.uTexture2.value = prevTexture;
+
+            const tl = gsap.timeline();
+            tl.to(this.uniforms.uAmplitude, {
+                value: 10., 
+            })
+            .to(this.uniforms.uProgress, {
+               value: 1., 
+                duration: 1,
+                ease: "power2.out",
+                // reversed: true
+            })
+            .to(this.uniforms.uAmplitude, {
+                value: 0., 
+                duration: 1,
+                delay: 0.2,
+                ease: "power3.out",
+                onComplete: () => {
+                    this.currentSlide = prevIndex;
+                    this.uniforms.uTexture1.value = prevTexture;
+                    this.uniforms.uProgress.value = 0;
+                    this.isRunning = false;
+                    }
+            })
+        
+    });
     }
 
 
@@ -58,28 +108,29 @@ class MeshItem0 {
 
     createMesh() {
         const geometry = new THREE.PlaneGeometry(1, 1, 10, 10);
+
+        this.images.forEach((item) => {
+            const imageTexture = new THREE.TextureLoader().load(item);
+            imageTexture.minFilter = THREE.LinearFilter;
+            this.imgsLoaded.push(imageTexture)
+        })
         
-        this.imageTexture1 = new THREE.TextureLoader().load(image1);
-        this.imageTexture1.minFilter = THREE.LinearFilter;
 
-        this.imageTexture2 = new THREE.TextureLoader().load(image2);
-        this.imageTexture2.minFilter = THREE.LinearFilter;
-
-        this.imageTexture3 = new THREE.TextureLoader().load(image3);
-        this.imageTexture3.minFilter = THREE.LinearFilter;
+        this.displacmentImg = new THREE.TextureLoader().load(displacment);
+        this.displacmentImg.minFilter = THREE.LinearFilter;
 
 
         this.uniforms = {
-            uTexture1: { value: this.imageTexture1 },
-            uTexture2: { value: this.imageTexture2 },
-            uDisplacment: { value: this.imageTexture3 },
-            uOffset: { value: new THREE.Vector2(0.0, 0.0) },
-            uAlpha: { value: 1.0 },
-            u_mouse: { type: "v2", value: new THREE.Vector2() },
-            uTime: { type: "f", value: 0.0 },
-            uProgress: { value: 0. },
-            uAmplitude: { value: 0. },
-            iResolution: { type: "v2", value: new THREE.Vector2(602, 480) }, 
+            uTexture1: { value: this.imgsLoaded[this.currentSlide]},
+            uTexture2: { value: this.imgsLoaded[this.nextSlide] },
+                uDisplacment: { value: this.imageTexture3 },
+                uOffset: { value: new THREE.Vector2(0.0, 0.0) },
+                uAlpha: { value: 1.0 },
+                u_mouse: { type: "v2", value: new THREE.Vector2() },
+                uTime: { type: "f", value: 0.0 },
+                uProgress: { value: 0. },
+                uAmplitude: { value: 0. },
+                iResolution: { type: "v2", value: new THREE.Vector2(602, 480) }, 
         };
 
         this.material = new THREE.ShaderMaterial({
@@ -102,8 +153,9 @@ class MeshItem0 {
 
         this.uniforms.uOffset.value.set(this.offset.x * 0.5, -(velocity) * 0.0003);
 
+ 
+
         if (this.mesh.uuid === selectMesh?.uuid) {
-            // console.log(444)
             this.uniforms.u_mouse.value.x = lerp(0.0, mouseCoordinates.x, 0.6);
             this.uniforms.u_mouse.value.y = lerp(0.0, mouseCoordinates.y, 0.6);
             this.uniforms.uTime.value += 0.05;
@@ -117,3 +169,5 @@ class MeshItem0 {
 }
 
 export default MeshItem0
+
+

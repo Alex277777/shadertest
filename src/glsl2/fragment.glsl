@@ -1,9 +1,6 @@
 uniform sampler2D uTexture1; 
 uniform sampler2D uTexture2; 
-uniform sampler2D uDisplacment; 
 
-
-uniform float uTime;
 uniform float uProgress;
 uniform vec2 iResolution;
 
@@ -19,24 +16,47 @@ vec4 columnDraw (float start, float end, vec2 uv, float time){
 void main() {
 	vec2 uv = vUv;
 
-	float time = uProgress * 4.;
+	float time = uProgress;
+	float ease = 1. ;
+
 	vec4 texture1 = texture2D( uTexture1, vec2(vUv.x , vUv.y));
 	vec4 texture2 = texture2D( uTexture2, vec2(vUv.x , vUv.y));
 
-	vec4 column = columnDraw(0.0, 0.25, uv, time);
+	vec4 lines = vec4( vec3( step(0.986, fract(uv.x * 10.)) ), 1.0);
 
-	if (time > 1.){
-		column += columnDraw(0.25, 0.5, uv, time - 1.);
+	vec4 column = columnDraw(0.0, 0.1, uv, time );
+	
+
+	if (time * ease > 0.1){
+		column = column + columnDraw(0.1, 0.2, uv, time * ease - 0.1);
 	}
-	if (time > 2.){
-		column += columnDraw(0.5, 0.75, uv, time - 2.);
+	if (time * ease > 0.2){
+		column = column + columnDraw(0.2, 0.3, uv, time * ease  - 0.2);
 	}
-	if (time > 3.){
-		column += columnDraw(0.75, 1., uv, time - 3.);
+	if (time * ease > 0.3){
+		column = column + columnDraw(0.3, 0.4, uv, time * ease  - 0.3);
+	}
+	if (time * ease > 0.4){
+		column = column + columnDraw(0.4, 0.5, uv, time * ease  - 0.4);
+	}
+	if (time * ease > 0.5){
+		column = column + columnDraw(0.5, 0.6, uv, time * ease  - 0.5);
+	}
+	if (time * ease > 0.6){
+		column = column + columnDraw(0.6, 0.7, uv, time * ease  - 0.6);
+	}
+	if (time * ease > 0.7){
+		column = column + columnDraw(0.7, 0.8, uv, time * ease  - 0.7);
+	}
+	if (time * ease > 0.8){
+		column = column + columnDraw(0.8, 0.9, uv, time * ease  - 0.8);
+	}
+	if (time * ease > 0.9){
+		column = column + columnDraw(0.9, 1.0, uv, time * ease  - 0.9);
 	}
 
-	gl_FragColor = mix(texture2, texture1, column); 
+	gl_FragColor = mix(texture1, texture2, column) + lines*0.2; 
 
-	// gl_FragColor = column; 
+	//gl_FragColor = lines; 
 }
 

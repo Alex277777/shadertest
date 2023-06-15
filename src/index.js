@@ -84,7 +84,7 @@ class Model {
                 depthWrite: false
             } );
 
-            console.log(this.particlesGeometry)
+
 
 
 

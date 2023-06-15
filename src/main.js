@@ -6,6 +6,15 @@ import MeshItem1 from '/src/meshItems/meshItem1';
 import MeshItem2 from '/src/meshItems/meshItem2';
 import MeshItem3 from '/src/meshItems/meshItem3';
 import MeshItem4 from '/src/meshItems/meshItem4';
+import MeshItem5 from '/src/meshItems/meshItem5';
+import MeshItem6 from '/src/meshItems/meshItem6';
+import MeshItem7 from '/src/meshItems/meshItem7';
+import MeshItem8 from '/src/meshItems/meshItem8';
+import MeshItem9 from '/src/meshItems/meshItem9';
+import MeshItem10 from '/src/meshItems/meshItem10';
+import MeshItem11 from '/src/meshItems/meshItem11';
+import MeshItem12 from '/src/meshItems/meshItem12';
+
 
 
 const lerp = (start, end, t) => {
@@ -16,6 +25,7 @@ class Sketch {
     constructor() {
         this.body = document.querySelector('body');
         this.images = [...document.querySelectorAll('.webGl')];
+
         
         this.scrollable = document.querySelector(".smooth-scroll");
         this.current = 0;
@@ -37,20 +47,24 @@ class Sketch {
         this.initRenderer();
        
         this.render();        
-        this.addGui()
+        // this.addGui()
     }
 
 
 
     addGui(){
         const gui = new GUI()
-        console.log(this.scene)
+     
         this.scene.children.forEach(child =>{
             const cubeFolder = gui.addFolder(child.uuid)
+            if (child.material?.uniforms?.uProgress){
             cubeFolder.add(child.material.uniforms.uProgress, "value").min(0).max(1);
+            }
+
             if (child.material?.uniforms?.uAmplitude){
                 cubeFolder.add(child.material.uniforms.uAmplitude, "value").min(0).max(10);
             }
+
         })
     }
 
@@ -73,7 +87,7 @@ class Sketch {
     smoothScroll = () => {
         this.target = window.scrollY;
         this.current = lerp(this.current, this.target, this.ease);
-        this.scrollable.style.transform = `translate3d(0,${-this.current}px, 0)`;
+        this.scrollable.style.transform = `translate3d(0,${-this.current*0.1}px, 0)`;
     };
 
     get viewport() {
@@ -116,12 +130,39 @@ class Sketch {
         const meshItem4 = new MeshItem4(this.images[4], this.scene);
         this.meshItems.push(meshItem4);
 
+        const meshItem5 = new MeshItem5(this.images[5], this.scene);
+        this.meshItems.push(meshItem5);
+
+        const meshItem6 = new MeshItem6(this.images[6], this.scene);
+        this.meshItems.push(meshItem6);
+
+        const meshItem7 = new MeshItem7(this.images[7], this.scene);
+        this.meshItems.push(meshItem7);
+
+        const meshItem8 = new MeshItem8(this.images[8], this.scene);
+        this.meshItems.push(meshItem8);
+
+
+        const meshItem9 = new MeshItem9(this.images[9], this.scene);
+        this.meshItems.push(meshItem9);
+
+        const meshItem10 = new MeshItem10(this.images[10], this.scene);
+        this.meshItems.push(meshItem10);
+
+        const meshItem11 = new MeshItem11(this.images[11], this.scene);
+        this.meshItems.push(meshItem11);
+
+        const meshItem12 = new MeshItem12(this.images[12], this.scene);
+        this.meshItems.push(meshItem12);
+
 
         this.scene.traverse((item) => {
             if (item.isMesh) {
                 this.planeItems.push(item);
             }
         })
+
+
     }
 
     onWindowResize() {
@@ -157,7 +198,7 @@ class Sketch {
         const velocity = (this.target - this.current);
 
         for (let i = 0; i < this.meshItems.length; i++) {
-            this.meshItems[i].render(velocity, this.mouseCoordinates, this.selectMesh);
+            this.meshItems[i].render(velocity, this.mouseCoordinates, this.selectMesh, this.camera);
         }
 
         this.renderer.render(this.scene, this.camera);

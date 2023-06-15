@@ -87,7 +87,7 @@ class Sketch {
     smoothScroll = () => {
         this.target = window.scrollY;
         this.current = lerp(this.current, this.target, this.ease);
-        this.scrollable.style.transform = `translate3d(0,${-this.current*0.1}px, 0)`;
+        this.scrollable.style.transform = `translate3d(0,${-this.current}px, 0)`;
     };
 
     get viewport() {
